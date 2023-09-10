@@ -1,0 +1,46 @@
+[package]
+name = "noscrum_rs"
+version = "0.1.0"
+description = "Serverless implementation for a personal project planning tool"
+license = "MIT"
+readme = "../README.md"
+homepage = "https://noscrum.plbl.net"
+edition = "2021"
+
+#[lib]
+#crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+
+[dependencies]
+cfg-if = "1.0.0"
+axum = { version = "0.6.20", optional = true}
+http = { version = "0.2.8", optional = true }
+lambda_http = {version="0.8.1", optional = true}
+lambda_runtime = {version="0.8.1", optional = true}
+leptos = { version = "0.4.10", features = ["csr", "hydrate", "wasm-bindgen"] }
+leptos_axum = { version = "0.4.10", optional = true }
+leptos_meta = { version = "0.4.10", default-features = false }
+leptos_router = { version = "0.4.10", default-features = false }
+serde = { version = "1.0.188", features = ["derive"] }
+tokio = { version = "1.32.0", features = ["macros", "rt-multi-thread"], optional=true }
+tracing = { version = "0.1.37", features = ["log"] }
+tracing-subscriber = { version = "0.3.17", default-features = false, features = ["fmt"] }
+dynomite = { version = "0.10.0", features = ["uuid"] }
+uuid = { version = "0.8", features = ["v4", "serde"] }
+rusoto_core = "0.48.0"
+futures = "0.3.28"
+dynomite-derive = "0.10.0"
+chrono = { version = "0.4.28", features = ["serde"] }
+
+[features]
+default = ["csr"]
+csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+ssr = ["dep:axum", "dep:lambda_runtime", "dep:lambda_http", "dep:tokio", "dep:http", "leptos/ssr", "leptos_axum", "leptos_meta/ssr", "leptos_router/ssr"]
+
+[package.metadata.cargo-all-features]
+denylist = ["axum", "tower", "tower-http", "tokio", "http", "leptos_axum"]
+skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
